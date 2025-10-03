@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>API de Cursos - Examen</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <!-- HEADER -->
+  <header class="bg-primary p-4 text-white text-center">
+    <h1 class="fw-bold">API de Cursos</h1>
+    <p class="mb-0">Examen - Aplicaciones Híbridas</p>
+  </header>
+
+  <!-- INTRO / DESCRIPCIÓN -->
+  <section class="container my-4">
+    <div class="row">
+      <div class="col-lg-8 mx-auto">
+        <h2>¿De qué trata esta API?</h2>
+        <p>
+          Esta API REST permite gestionar compras, cursos y usuarios  en una plataforma educativa
+          (modalidades online, híbrido y presencial). Está pensada para desarrollo local y pruebas en el examen.
+        </p>
+
+        <h3>Breve descripción</h3>
+        <p>
+          Provee endpoints para crear, listar, actualizar y eliminar compras, usuarios y cursos.
+        </p>
+
+        <h3>Contexto en pocas palabras</h3>
+        <p>
+          Desarrollada como trabajo para la materia <em>Aplicaciones Híbridas</em> (Comisión DWN4AV).
+          Simula un backend de venta de compra para ser usado con frontends o herramientas como Postman.
+        </p>
+
+        <h3>Qué ofrece la API</h3>
+        <ul>
+          <li>CRUD para <strong>Compras</strong>, <strong>Usuarios</strong> y <strong>Cursos</strong>.</li>
+          <li>Endpoints para obtener por ID y filtrar (ej.: compras por usuario).</li>
+          <li>Ejemplos listos para probar en Postman y una página estática con la documentación básica.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- NAV TABS: ENDPOINTS -->
+  <main class="container mt-3">
+    <h2 class="text-center mb-3">Endpoints disponibles</h2>
+
+    <ul class="nav nav-tabs" id="apiTab" role="tablist">
+      <li class="nav-item" role="presentation">
+        <button class="nav-link active" id="cursos-tab" data-bs-toggle="tab" data-bs-target="#cursos" type="button">Cursos</button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" id="usuarios-tab" data-bs-toggle="tab" data-bs-target="#usuarios" type="button">Usuarios</button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" id="compras-tab" data-bs-toggle="tab" data-bs-target="#compras" type="button">Compras</button>
+      </li>
+    </ul>
+
+    <div class="tab-content mt-3" id="apiTabContent">
+      <!-- Cursos -->
+      <div class="tab-pane fade show active" id="cursos" role="tabpanel">
+        <ul class="list-group">
+          <li class="list-group-item">
+            <span class="badge bg-success me-2">GET</span>
+            <a href="/api/cursos" target="_blank">/api/cursos</a> — Obtener todos los cursos
+          </li>
+          <li class="list-group-item">
+            <span class="badge bg-success me-2">GET</span>
+            <a href="/api/cursos/ID_CURSO" target="_blank">/api/cursos/:id</a> — Obtener curso por ID
+          </li>
+          <li class="list-group-item">
+            <span class="badge bg-warning text-dark me-2">POST</span>
+            /api/cursos — Crear curso (body JSON)
+            <pre>{
+              "nombre": "JavaScript Básico",
+              "descripcion": "Curso inicial de JS",
+              "categoria": "Programación",
+              "modalidad": "online",
+              "precio": 5000,
+              "duracion": 40
+                 }
+            </pre>
+          </li>
+        </ul>
+      </div>
+
+      <!-- Usuarios -->
+      <div class="tab-pane fade" id="usuarios" role="tabpanel">
+        <ul class="list-group">
+          <li class="list-group-item">
+            <span class="badge bg-success me-2">GET</span>
+            <a href="/api/usuarios" target="_blank">/api/usuarios</a> — Obtener todos los usuarios
+          </li>
+          <li class="list-group-item">
+            <span class="badge bg-success me-2">GET</span>
+            <a href="/api/usuarios/ID_USUARIO" target="_blank">/api/usuarios/:id</a> — Obtener usuario por ID
+          </li>
+          <li class="list-group-item">
+            <span class="badge bg-warning text-dark me-2">POST</span>
+            /api/usuarios — Crear usuario (body JSON)
+            <pre>{
+              "name": "Juan Pérez",
+              "email": "juan@example.com",
+              "password": "123456",
+                  }
+            </pre>
+          </li>
+        </ul>
+      </div>
+
+      <!-- Compras -->
+      <div class="tab-pane fade" id="compras" role="tabpanel">
+        <ul class="list-group">
+          <li class="list-group-item">
+            <span class="badge bg-success me-2">GET</span>
+            <a href="/api/compras" target="_blank">/api/compras</a> — Obtener todas las compras
+          </li>
+          <li class="list-group-item">
+            <span class="badge bg-success me-2">GET</span>
+            <a href="/api/compras/ID_COMPRA" target="_blank">/api/compras/:id</a> — Obtener compra por ID
+          </li>
+          <li class="list-group-item">
+            <span class="badge bg-warning text-dark me-2">POST</span>
+            /api/compras — Crear compra (body JSON)
+            <pre>{
+                "usuario": "ID_USUARIO",
+                "curso": "ID_CURSO",
+                "metodoPago": "tarjeta",
+                "estado": "pagado"
+                }
+            </pre>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="bg-primary text-white mt-5 p-3">
+    <div class="container d-flex justify-content-between flex-wrap">
+      <span><strong>Alumno:</strong> Leandro Romero D'Alegre</span>
+      <span><strong>Materia:</strong> Aplicaciones Híbridas</span>
+      <span><strong>Docente:</strong> Jhonatan Manuel Cruz</span>
+      <span><strong>Comisión:</strong> DWN4AV</span>
+    </div>
+  </footer>
+</body>
+</html>
