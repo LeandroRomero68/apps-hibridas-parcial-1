@@ -22,3 +22,8 @@ DWAN4AV
    - POST http://localhost:3000/api/cursos
    - PUT http://localhost:3000/api/cursos/:id
    - DELETE http://localhost:3000/api/cursos/:id
+
+   - GET http://localhost:3000/api/usuarios
+   - POST http://localhost:3000/api/usuarios
+   - PUT http://localhost:3000/api/usuarios/:id
+   - DELETE http://localhost:3000/api/usuarios/:id   
