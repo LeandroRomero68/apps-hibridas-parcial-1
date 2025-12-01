@@ -7,8 +7,8 @@ class passManager {
     }
 
     hashPassword(password) {
-        if(!password) {
-            console.log('No hay cotraseña');
+        if (!password) {
+            console.log('No hay contraseña');
             return;
         }
         const saltPass = bcrypt.genSaltSync(this.salt);
@@ -16,6 +16,10 @@ class passManager {
         return password;
     }
 
+    comparePassword(plainPassword, hashedPassword) {
+        if (!plainPassword || !hashedPassword) return false;
+        return bcrypt.compareSync(plainPassword, hashedPassword);
+    }
 }
 
 export default passManager;

@@ -1,11 +1,12 @@
-import User from "../model/usuarioModel.js"; 
+// usuarioController.js
+import User from "../model/usuarioModel.js";
 import Response from "../classes/Response.js";
 import PassManager from "../classes/passManager.js";
 
 class usuarioController {
 
     // ============================
-    //  Obtener todos los usuarios
+    // Obtener todos los usuarios
     // ============================
     async getUsuarios(req, res) {
         const myRes = new Response();
@@ -24,14 +25,13 @@ class usuarioController {
     }
 
     // ============================
-    //  Crear usuario (Registro)
+    // Crear usuario (Registro)
     // ============================
     async addUsuario(req, res) {
         const myRes = new Response();
         try {
             const { nombre, email, password } = req.body;
 
-            // Verificar campos
             if (!nombre || !email || !password) {
                 return myRes.generateResponseFalse(
                     res,
@@ -56,7 +56,6 @@ class usuarioController {
             const passMan = new PassManager(10);
             const hashedPassword = await passMan.hashPassword(password);
 
-            // Crear y guardar usuario
             const newUser = new User({
                 nombre,
                 email,
@@ -64,12 +63,7 @@ class usuarioController {
             });
 
             const savedUser = await newUser.save();
-
-            return myRes.generateResponseTrue(
-                res,
-                "Usuario creado correctamente",
-                savedUser
-            );
+            return myRes.generateResponseTrue(res, "Usuario creado correctamente", savedUser);
 
         } catch (err) {
             return myRes.generateResponseFalse(
@@ -83,7 +77,61 @@ class usuarioController {
     }
 
     // ============================
-    //  Obtener usuario por ID
+    // Login de usuario
+    // ============================
+    async login(req, res) {
+        const myRes = new Response();
+        try {
+            const { email, password } = req.body;
+
+            if (!email || !password) {
+                return myRes.generateResponseFalse(
+                    res,
+                    "Faltan campos",
+                    "Debes completar email y password",
+                    400
+                );
+            }
+
+            const user = await User.findOne({ email });
+            if (!user) {
+                return myRes.generateResponseFalse(
+                    res,
+                    "Usuario no encontrado",
+                    "Email no registrado",
+                    404
+                );
+            }
+
+            const passMan = new PassManager(10);
+            const validPassword = await passMan.comparePassword(password, user.password);
+            if (!validPassword) {
+                return myRes.generateResponseFalse(
+                    res,
+                    "Contraseña incorrecta",
+                    "Password incorrecto",
+                    401
+                );
+            }
+
+            // Generar token (puedes reemplazar por JWT real si quieres)
+            const token = "token_prueba";
+
+            return myRes.generateResponseTrue(res, "Login exitoso", { user, token });
+
+        } catch (err) {
+            return myRes.generateResponseFalse(
+                res,
+                "Error al iniciar sesión",
+                "Error interno del servidor",
+                500,
+                err
+            );
+        }
+    }
+
+    // ============================
+    // Obtener usuario por ID
     // ============================
     async getUsuarioById(req, res) {
         const myRes = new Response();
@@ -95,7 +143,6 @@ class usuarioController {
             }
 
             const usuario = await User.findById(id);
-
             if (!usuario) {
                 return myRes.generateResponseFalse(
                     res,
@@ -119,7 +166,7 @@ class usuarioController {
     }
 
     // ============================
-    //  Actualizar un usuario
+    // Actualizar usuario por ID
     // ============================
     async updateUsuarioById(req, res) {
         const myRes = new Response();
@@ -158,11 +205,7 @@ class usuarioController {
                 );
             }
 
-            return myRes.generateResponseTrue(
-                res,
-                "Usuario actualizado",
-                updated
-            );
+            return myRes.generateResponseTrue(res, "Usuario actualizado", updated);
 
         } catch (err) {
             return myRes.generateResponseFalse(
@@ -176,7 +219,7 @@ class usuarioController {
     }
 
     // ============================
-    //  Eliminar usuario
+    // Eliminar usuario por ID
     // ============================
     async deleteUsuarioById(req, res) {
         const myRes = new Response();
@@ -188,7 +231,6 @@ class usuarioController {
             }
 
             const deleted = await User.findByIdAndDelete(id);
-
             if (!deleted) {
                 return myRes.generateResponseFalse(
                     res,
@@ -198,11 +240,7 @@ class usuarioController {
                 );
             }
 
-            return myRes.generateResponseTrue(
-                res,
-                "Usuario eliminado",
-                deleted
-            );
+            return myRes.generateResponseTrue(res, "Usuario eliminado", deleted);
 
         } catch (err) {
             return myRes.generateResponseFalse(
