@@ -2,6 +2,7 @@
 import User from "../model/usuarioModel.js";
 import Response from "../classes/Response.js";
 import PassManager from "../classes/passManager.js";
+import jwt from "jsonwebtoken";
 
 class usuarioController {
 
@@ -30,7 +31,7 @@ class usuarioController {
     async addUsuario(req, res) {
         const myRes = new Response();
         try {
-            const { nombre, email, password } = req.body;
+            const { nombre, email, password, rol } = req.body;
 
             if (!nombre || !email || !password) {
                 return myRes.generateResponseFalse(
@@ -60,6 +61,7 @@ class usuarioController {
                 nombre,
                 email,
                 password: hashedPassword,
+                rol: rol ?? "user"  // ← por defecto es "user"
             });
 
             const savedUser = await newUser.save();
@@ -94,6 +96,7 @@ class usuarioController {
             }
 
             const user = await User.findOne({ email });
+
             if (!user) {
                 return myRes.generateResponseFalse(
                     res,
@@ -105,6 +108,7 @@ class usuarioController {
 
             const passMan = new PassManager(10);
             const validPassword = await passMan.comparePassword(password, user.password);
+
             if (!validPassword) {
                 return myRes.generateResponseFalse(
                     res,
@@ -114,10 +118,27 @@ class usuarioController {
                 );
             }
 
-            // Generar token (puedes reemplazar por JWT real si quieres)
-            const token = "token_prueba";
+            // 🔥 CREAR JWT REAL CON ROL
+            const token = jwt.sign(
+                {
+                    id: user._id,
+                    email: user.email,
+                    rol: user.rol ?? "user",
+                },
+                process.env.JWT_SECRET,
+                { expiresIn: "7d" }
+            );
 
-            return myRes.generateResponseTrue(res, "Login exitoso", { user, token });
+            // 🔥 Enviar solo lo necesario al frontend
+            return myRes.generateResponseTrue(res, "Login exitoso", {
+                user: {
+                    id: user._id,
+                    nombre: user.nombre,
+                    email: user.email,
+                    rol: user.rol ?? "user",
+                },
+                token,
+            });
 
         } catch (err) {
             return myRes.generateResponseFalse(
@@ -231,6 +252,7 @@ class usuarioController {
             }
 
             const deleted = await User.findByIdAndDelete(id);
+
             if (!deleted) {
                 return myRes.generateResponseFalse(
                     res,
