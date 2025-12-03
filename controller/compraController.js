@@ -1,4 +1,4 @@
-import Compra from "../model/compraModel.js"; // Modelo de compras
+import Compra from "../model/compraModel.js";
 import Response from "../classes/Response.js";
 import mongoose from "mongoose";
 
@@ -8,38 +8,43 @@ class compraController {
     async getCompras(req, res) {
         const myRes = new Response();
         try {
-            const comprasRaw = await Compra.find(); // Solo sin populate
-            console.log("Compras crudas:", comprasRaw);
-
             const compras = await Compra.find()
-                .populate("usuario")
+                .populate("usuario", "nombre email")
                 .populate("curso");
-
-            console.log("Compras con populate:", compras);
 
             myRes.generateResponseTrue(res, 'Compras encontradas', compras);
         } catch (err) {
-            console.error("Error real:", err); // Mostramos error completo en consola
             myRes.generateResponseFalse(res, 'No se pudieron encontrar las compras', 'Error al obtener las compras', 500, err);
         }
     }
 
-    // Crear una nueva compra
+    // Crear compra
     async addCompra(req, res) {
         const myRes = new Response();
-        try {
-            console.log("Body recibido en el servidor:", req.body);
 
+         console.log("BODY RECIBIDO EN BACK:", req.body);
+        try {
             const { usuario, curso, metodoPago, estado } = req.body;
 
-            if (!usuario || !curso || !metodoPago || !estado) {
-                myRes.generateResponseFalse(res, 'Faltan campos', 'Debes completar todos los campos', 400);
-                return;
+            if (!usuario || !curso || !metodoPago) {
+                return myRes.generateResponseFalse(
+                    res,
+                    'Faltan campos',
+                    'Debes completar todos los campos',
+                    400
+                );
             }
 
-            const newCompra = new Compra({ usuario, curso, metodoPago, estado });
+            const newCompra = new Compra({
+                usuario,
+                curso,
+                metodoPago,
+                estado: estado || "completado"
+            });
+
             const dataSaved = await newCompra.save();
             myRes.generateResponseTrue(res, 'Compra creada', dataSaved);
+
         } catch (err) {
             myRes.generateResponseFalse(res, 'No se pudo crear la compra', 'Error al guardar la compra', 500, err);
         }
@@ -50,16 +55,21 @@ class compraController {
         const myRes = new Response();
         try {
             const id = req.params.id;
+
             if (!mongoose.Types.ObjectId.isValid(id)) {
-                myRes.invalidId(res);
-                return;
+                return myRes.invalidId(res);
             }
-            const compra = await Compra.findById(id).populate("usuario").populate("curso");
-            if(compra) {
-                myRes.generateResponseTrue(res, 'Compra encontrada', compra);
-            } else {
-                myRes.generateResponseFalse(res, 'Compra no encontrada', 'No se encontró la compra', 404);
+
+            const compra = await Compra.findById(id)
+                .populate("usuario", "nombre email")
+                .populate("curso");
+
+            if (!compra) {
+                return myRes.generateResponseFalse(res, 'Compra no encontrada', 'No se encontró la compra', 404);
             }
+
+            myRes.generateResponseTrue(res, 'Compra encontrada', compra);
+
         } catch (err) {
             myRes.generateResponseFalse(res, 'Error al buscar la compra', 'No se pudo buscar la compra', 500, err);
         }
@@ -72,9 +82,8 @@ class compraController {
             const id = req.params.id;
             const { usuario, curso, metodoPago, estado } = req.body;
 
-            if (!usuario || !curso || !metodoPago || !estado) {
-                myRes.generateResponseFalse(res, 'Faltan campos', 'Debes completar todos los campos', 400);
-                return;
+            if (!usuario || !curso || !metodoPago) {
+                return myRes.generateResponseFalse(res, 'Faltan campos', 'Debes completar todos los campos', 400);
             }
 
             const compraUpdated = await Compra.findByIdAndUpdate(
@@ -83,11 +92,12 @@ class compraController {
                 { new: true }
             );
 
-            if(compraUpdated) {
-                myRes.generateResponseTrue(res, 'Compra actualizada', compraUpdated);
-            } else {
-                myRes.generateResponseFalse(res, 'Compra no encontrada', 'No se encontró la compra', 404);
+            if (!compraUpdated) {
+                return myRes.generateResponseFalse(res, 'Compra no encontrada', 'No se encontró la compra', 404);
             }
+
+            myRes.generateResponseTrue(res, 'Compra actualizada', compraUpdated);
+
         } catch (err) {
             myRes.generateResponseFalse(res, 'Error al actualizar la compra', 'No se pudo actualizar la compra', 500, err);
         }
@@ -98,16 +108,19 @@ class compraController {
         const myRes = new Response();
         try {
             const id = req.params.id;
+
             if (!mongoose.Types.ObjectId.isValid(id)) {
-                myRes.invalidId(res);
-                return;
+                return myRes.invalidId(res);
             }
+
             const compraDeleted = await Compra.findByIdAndDelete(id);
-            if(compraDeleted) {
-                myRes.generateResponseTrue(res, 'Compra eliminada', compraDeleted);
-            } else {
-                myRes.generateResponseFalse(res, 'Compra no encontrada', 'No se encontró la compra', 404);
+
+            if (!compraDeleted) {
+                return myRes.generateResponseFalse(res, 'Compra no encontrada', 'No se encontró la compra', 404);
             }
+
+            myRes.generateResponseTrue(res, 'Compra eliminada', compraDeleted);
+
         } catch (err) {
             myRes.generateResponseFalse(res, 'Error al eliminar la compra', 'No se pudo eliminar la compra', 500, err);
         }
@@ -117,21 +130,22 @@ class compraController {
     async getComprasByUsuario(req, res) {
         const myRes = new Response();
         try {
-            const usuarioId = req.params.usuarioId;
+            const { usuarioId } = req.params;
+
             if (!mongoose.Types.ObjectId.isValid(usuarioId)) {
-                myRes.invalidId(res);
-                return;
+                return myRes.invalidId(res);
             }
-            const compras = await Compra.find({ usuario: usuarioId }).populate("curso");
-            if(compras.length > 0) {
-                myRes.generateResponseTrue(res, 'Compras del usuario encontradas', compras);
-            } else {
-                myRes.generateResponseFalse(res, 'No se encontraron compras para este usuario', 'El usuario no tiene compras', 404);
-            }
+
+            const compras = await Compra.find({ usuario: usuarioId })
+                .populate("curso");
+
+            myRes.generateResponseTrue(res, 'Compras del usuario obtenidas', compras);
+
         } catch (err) {
-            myRes.generateResponseFalse(res, 'Error al buscar compras del usuario', 'No se pudieron obtener las compras', 500, err);
+            myRes.generateResponseFalse(res, 'Error al obtener compras por usuario', 'No se pudo obtener las compras', 500, err);
         }
     }
+
 }
 
 export default compraController;

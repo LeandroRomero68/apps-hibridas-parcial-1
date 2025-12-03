@@ -1,15 +1,34 @@
+// backend/models/Compra.js
 import mongoose from "mongoose";
 
-const Schema = mongoose.Schema;
+const CompraSchema = new mongoose.Schema(
+  {
+    usuario: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Usuario",
+      required: true,
+    },
+    curso: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Curso",
+      required: true,
+    },
+    metodoPago: {
+      type: String,
+      required: true,
+    },
+    estado: {
+      type: String,
+      enum: ["debe", "completado"], // opcional para validar estados
+      default: "debe",
+    },
+    fechaCompra: {
+      type: Date,
+      default: Date.now,
+    },
+  },
+  { versionKey: false, timestamps: true }
+);
 
-const compraSchema = new Schema({
-    usuario: { type: mongoose.Schema.Types.ObjectId, ref: 'Usuario', required: true },
-    curso: { type: mongoose.Schema.Types.ObjectId, ref: 'Curso', required: true },
-    metodoPago: { type: String, required: true }, // ej. 'tarjeta', 'mercado pago', 'efectivo'
-    estado: { type: String, required: true }, // ej. 'pendiente', 'completado', 'cancelado'
-    fechaCompra: { type: Date, default: Date.now }
-});
-
-const Compra = mongoose.model('Compra', compraSchema);
-
+const Compra = mongoose.model("Compra", CompraSchema);
 export default Compra;
