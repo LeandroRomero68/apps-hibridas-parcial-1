@@ -7,7 +7,6 @@ export function authMiddleware(req, res, next) {
     return res.status(401).json({ ok: false, msg: "No se envió token" });
   }
 
-  // 🟢 Separa correctamente el token de "Bearer"
   const parts = header.split(" ");
 
   if (parts.length !== 2 || parts[0] !== "Bearer") {
@@ -17,14 +16,12 @@ export function authMiddleware(req, res, next) {
   const token = parts[1];
 
   try {
-    // 🟢 Verificamos el JWT
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-    // 🔥 Aseguramos que req.user SIEMPRE tenga id, email y rol
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
     req.user = {
       id: decoded.id,
       email: decoded.email,
-      rol: decoded.rol ?? "user" // si no viene rol, asigna user por defecto
+      rol: decoded.rol ?? "user"
     };
 
     return next();

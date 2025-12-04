@@ -1,4 +1,3 @@
-// usuarioController.js
 import User from "../model/usuarioModel.js";
 import Response from "../classes/Response.js";
 import PassManager from "../classes/passManager.js";
@@ -6,9 +5,6 @@ import jwt from "jsonwebtoken";
 
 class usuarioController {
 
-    // ============================
-    // Obtener todos los usuarios
-    // ============================
     async getUsuarios(req, res) {
         const myRes = new Response();
         try {
@@ -25,9 +21,7 @@ class usuarioController {
         }
     }
 
-    // ============================
-    // Crear usuario (Registro)
-    // ============================
+
     async addUsuario(req, res) {
         const myRes = new Response();
         try {
@@ -78,9 +72,7 @@ class usuarioController {
         }
     }
 
-    // ============================
-    // Login de usuario
-    // ============================
+
     async login(req, res) {
         const myRes = new Response();
         try {
@@ -118,7 +110,7 @@ class usuarioController {
                 );
             }
 
-            // 🔥 CREAR JWT REAL CON ROL
+            // CREAR JWT REAL CON ROL
             const token = jwt.sign(
                 {
                     id: user._id,
@@ -129,7 +121,7 @@ class usuarioController {
                 { expiresIn: "7d" }
             );
 
-            // 🔥 Enviar solo lo necesario al frontend
+            // Enviar solo lo necesario al frontend
             return myRes.generateResponseTrue(res, "Login exitoso", {
                 user: {
                     id: user._id,
@@ -151,9 +143,6 @@ class usuarioController {
         }
     }
 
-    // ============================
-    // Obtener usuario por ID
-    // ============================
     async getUsuarioById(req, res) {
         const myRes = new Response();
         try {
@@ -186,9 +175,6 @@ class usuarioController {
         }
     }
 
-    // ============================
-    // Actualizar usuario por ID
-    // ============================
     async updateUsuarioById(req, res) {
         const myRes = new Response();
         try {
@@ -239,9 +225,6 @@ class usuarioController {
         }
     }
 
-    // ============================
-    // Eliminar usuario por ID
-    // ============================
     async deleteUsuarioById(req, res) {
         const myRes = new Response();
         try {

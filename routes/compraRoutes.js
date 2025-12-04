@@ -6,17 +6,12 @@ import { authMiddleware } from "../middlewares/auth.js";
 const router = express.Router();
 const controller = new compraController();
 
-/**
- * ⭐ Obtener cursos comprados por el usuario logueado
- * Endpoint → GET /api/compras/mis-cursos
- */
 router.get("/mis-cursos", authMiddleware, async (req, res) => {
   try {
-    const usuarioId = req.user.id; // viene desde el token JWT
-
+    const usuarioId = req.user.id; 
     const compras = await Compra.find({ usuario: usuarioId })
-      .populate("curso") // Trae toda la información del curso comprado
-      .sort({ fechaCompra: -1 }); // Última compra primero
+      .populate("curso")
+      .sort({ fechaCompra: -1 });
 
     return res.json({
       ok: true,
@@ -31,9 +26,6 @@ router.get("/mis-cursos", authMiddleware, async (req, res) => {
   }
 });
 
-/**
- * 📌 Rutas ya existentes
- */
 router.get("/usuario/:usuarioId", controller.getComprasByUsuario);
 router.get("/:id", controller.getCompraById);
 router.get("/", controller.getCompras);

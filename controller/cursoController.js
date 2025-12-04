@@ -1,4 +1,4 @@
-import Curso from "../model/cursoModel.js"; // Modelo de cursos
+import Curso from "../model/cursoModel.js";
 import Response from "../classes/Response.js";
 
 class cursoController {
@@ -30,9 +30,9 @@ class cursoController {
                 nombre,
                 descripcion,
                 categoria,
-                modalidad, // ej. 'online', 'híbrido', 'presencial'
+                modalidad,
                 precio,
-                duracion, // ej. en horas o semanas
+                duracion,
                 fechaInicio: fechaInicio ?? null,
                 fechaFin: fechaFin ?? null,
             });

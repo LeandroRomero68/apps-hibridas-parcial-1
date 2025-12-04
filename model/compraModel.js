@@ -1,4 +1,3 @@
-// backend/models/Compra.js
 import mongoose from "mongoose";
 
 const CompraSchema = new mongoose.Schema(
